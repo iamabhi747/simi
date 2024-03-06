@@ -7,7 +7,8 @@ SIGMOID  = NonLinear("SIGMOID", lambda x: 1/(1+np.exp(-x)))
 TANH     = NonLinear("TANH", lambda x: np.tanh(x))
 
 NONLINEAR_FUNCTIONS = {
+    "IDENTITY": IDENTITY,
     "RELU": RELU,
     "SIGMOID": SIGMOID,
-    "TANH": TANH,
+    "TANH": TANH
 }
