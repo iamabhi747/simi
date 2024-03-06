@@ -1,5 +1,5 @@
 import numpy as np
-from Perceptron import Perceptron
+from .Perceptron import Perceptron
 
 class DenseLayer:
     def __init__(self, input_dim:int, output_dim:int, nl=None):
