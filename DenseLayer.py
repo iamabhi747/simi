@@ -14,3 +14,14 @@ class DenseLayer:
 
     def forward(self, x):
         return np.array([p.forward(x) for p in self.perceptrons])
+    
+    def backward(self, dC_dA):
+        dC_dX = np.zeros(self.input_dim)
+        for i, p in enumerate(self.perceptrons):
+            dC_dX += p.backward(dC_dA[i])
+        dC_dX /= len(self.perceptrons)
+        return dC_dX
+    
+    def update(self, lr):
+        for p in self.perceptrons:
+            p.update(lr)

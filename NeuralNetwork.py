@@ -13,6 +13,15 @@ class NeuralNetwork:
             x = layer.forward(x)
         return x
     
+    def backward(self, dC_dA):
+        for layer in reversed(self.layers):
+            dC_dA = layer.backward(dC_dA)
+        return dC_dA
+    
+    def update(self, lr):
+        for layer in self.layers:
+            layer.update(lr)
+    
     def save(self, filename:str):
         with open(filename, 'wb') as f:
             for layer in self.layers:
