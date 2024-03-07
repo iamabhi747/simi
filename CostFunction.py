@@ -6,3 +6,5 @@ class CostFunction:
         self.call = call
         self.derv = derv
 
+    def __call__(self, X_hat, X):
+        return self.call(X_hat, X).sum()
