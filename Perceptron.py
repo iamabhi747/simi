@@ -23,7 +23,7 @@ class Perceptron:
         return self.prev_my_nl_activation
     
     def backward(self, dC_dA:float) -> np.ndarray:
-        dA_dZ = self.nl.derivative(self.prev_my_activation)
+        dA_dZ = self.nl.derv(self.prev_my_activation)
         dZ_dW = self.prev_activations
         dZ_dB = 1
 

@@ -12,7 +12,7 @@ class Train:
         assert len(Xs) == len(Ys)
 
         for i in range(len(Xs)):
-            dC_dA = self.cf.derivative(self.nn.forward(Xs[i]), Ys[i])
+            dC_dA = self.cf.derv(self.nn.forward(Xs[i]), Ys[i])
             self.nn.backward(dC_dA)
             if i and i % update_period == 0:
                 self.nn.update(self.lr)
@@ -20,12 +20,12 @@ class Train:
     def train(self, data, batch_size, epochs:int=1, update_period:int=5):
         extra = len(data) - (len(data) // batch_size) * batch_size
         if extra > 0: extra = batch_size - extra
-        for i in np.random.choice(data, extra, replace=False):
-            data = data.append(data[i])
+        for i in np.random.randint(0, len(data), extra):
+            data.append(data[i])
 
         for _ in range(epochs):
             np.random.shuffle(data)
-            for i in range(0, data.size, batch_size):
+            for i in range(0, len(data), batch_size):
                 batch = data[i:i+batch_size]
                 Xs, Ys = zip(*batch)
                 Xs = np.array(Xs)
