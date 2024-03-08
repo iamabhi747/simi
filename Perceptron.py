@@ -39,6 +39,7 @@ class Perceptron:
         return dC_dX
     
     def update(self, lr:float) -> None:
+        if self.camulative_count == 0: return
         self.W -= lr * self.camulative_dC_dW / self.camulative_count
         self.b -= lr * self.camulative_dC_dB / self.camulative_count
         self.camulative_dC_dW = np.zeros(self.dim)
