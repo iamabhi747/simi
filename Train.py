@@ -17,7 +17,9 @@ class Train:
             if i and i % update_period == 0:
                 self.nn.update(self.lr)
 
-    def train(self, data, batch_size, epochs:int=1, update_period:int=5):
+    def train(self, data, batch_size, epochs:int=1, update_period:int=5, test_data_percentage:float=0.1):
+        test_data = data[:int(test_data_percentage*len(data))]
+        data      = data[int(test_data_percentage*len(data)):]
         extra = len(data) - (len(data) // batch_size) * batch_size
         if extra > 0: extra = batch_size - extra
         for i in np.random.randint(0, len(data), extra):
@@ -32,6 +34,14 @@ class Train:
                 Ys = np.array(Ys)
                 self.train_labeled_batch(Xs, Ys, update_period)
                 self.nn.update(self.lr)
-            print(f"Epoch {_+1} done")
+
+            Xs, Ys = zip(*test_data)
+            Xs = np.array(Xs)
+            Ys = np.array(Ys)
+            cost = 0.0
+            for j in range(len(Xs)):
+                cost += self.cf(self.nn.forward(Xs[j]), Ys[j])
+            cost /= len(Xs)
+            print(f"# Epoch {_+1} done {cost}")
 
         
