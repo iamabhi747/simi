@@ -1,4 +1,5 @@
 
+
 class NonLinear:
     def __init__(self, type:str, call, derv) -> None:
         self.type = type

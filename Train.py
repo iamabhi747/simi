@@ -1,23 +1,31 @@
-import numpy as np
 from .NeuralNetwork import NeuralNetwork
-from .CostFunction import CostFunction
+from . import cost
+import numpy as np
 
 class Train:
-    def __init__(self, nn:NeuralNetwork, cf:CostFunction, lr:int) -> None:
+    def __init__(self, nn: NeuralNetwork, lr=0.1, cf=None) -> None:
         self.nn = nn
         self.lr = lr
-        self.cf = cf
+        self.cf = cf if cf is not None and isinstance(cf, cost.CostFunction) else cost.MSE
 
-    def train_labeled_batch(self, Xs, Ys, update_period:int=5):
+    def train_batch(self, Xs, Ys, threshold=0.5):
         assert len(Xs) == len(Ys)
+        i = 0
+        while True and i < 1000:
+            c = sum([self.cf(Y, self.nn.forward(X)) for X, Y in zip(Xs, Ys)])
 
-        for i in range(len(Xs)):
-            dC_dA = self.cf.derv(self.nn.forward(Xs[i]), Ys[i])
-            self.nn.backward(dC_dA)
-            if i and i % update_period == 0:
-                self.nn.update(self.lr)
+            print(f"\rCost[{i}]: ", c, end="")
+            if c < threshold:
+                break
 
-    def train(self, data, batch_size, epochs:int=1, update_period:int=5, test_data_percentage:float=0.1):
+            for X, Y in zip(reversed(Xs), reversed(Ys)):
+                self.nn.backward(X, Y, self.cf)
+
+            self.nn.update(self.lr)
+            i += 1
+        print()
+
+    def train(self, data, batch_size, epochs:int=1, test_data_percentage:float=0.1):
         test_data = data[:int(test_data_percentage*len(data))]
         data      = data[int(test_data_percentage*len(data)):]
         extra = len(data) - (len(data) // batch_size) * batch_size
@@ -32,16 +40,14 @@ class Train:
                 Xs, Ys = zip(*batch)
                 Xs = np.array(Xs)
                 Ys = np.array(Ys)
-                self.train_labeled_batch(Xs, Ys, update_period)
-                self.nn.update(self.lr)
+                self.train_batch(Xs, Ys)
 
             Xs, Ys = zip(*test_data)
             Xs = np.array(Xs)
             Ys = np.array(Ys)
-            cost = 0.0
+            c = 0.0
             for j in range(len(Xs)):
-                cost += self.cf(self.nn.forward(Xs[j]), Ys[j])
-            cost /= len(Xs)
-            print(f"# Epoch {_+1} done {cost}")
-
-        
+                c += self.cf(self.nn.forward(Xs[j]), Ys[j])
+            c /= len(Xs)
+            print(f"# Epoch {_+1} done {c}")
+            self.nn.flush_cache()
