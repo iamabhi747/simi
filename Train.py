@@ -8,11 +8,11 @@ class Train:
         self.lr = lr
         self.cf = cf if cf is not None and isinstance(cf, cost.CostFunction) else cost.MSE
 
-    def train_batch(self, Xs, Ys, threshold=0.5):
+    def train_batch(self, Xs, Ys, threshold=0.05):
         assert len(Xs) == len(Ys)
         i = 0
         while True and i < 1000:
-            c = sum([self.cf(Y, self.nn.forward(X)) for X, Y in zip(Xs, Ys)])
+            c = sum([self.cf(Y, self.nn.forward(X)) for X, Y in zip(Xs, Ys)]) / len(Xs)
 
             print(f"\rCost[{i}]: ", c, end="")
             if c < threshold:
@@ -25,7 +25,7 @@ class Train:
             i += 1
         print()
 
-    def train(self, data, batch_size, epochs:int=1, test_data_percentage:float=0.1):
+    def train(self, data, batch_size, epochs:int=1, test_data_percentage:float=0.1, threshold=0.05):
         test_data = data[:int(test_data_percentage*len(data))]
         data      = data[int(test_data_percentage*len(data)):]
         extra = len(data) - (len(data) // batch_size) * batch_size
@@ -40,7 +40,7 @@ class Train:
                 Xs, Ys = zip(*batch)
                 Xs = np.array(Xs)
                 Ys = np.array(Ys)
-                self.train_batch(Xs, Ys)
+                self.train_batch(Xs, Ys, threshold=threshold)
 
             Xs, Ys = zip(*test_data)
             Xs = np.array(Xs)
