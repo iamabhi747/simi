@@ -3,6 +3,7 @@ from .. import nonlinear
 
 class DenseLayer:
     def __init__(self, input_dim:int, output_dim:int, nl=None):
+        self._name = 'DenseLayer'
         self.input_dim  = input_dim
         self.output_dim = output_dim
 
@@ -24,6 +25,16 @@ class DenseLayer:
         self.dC_dW = np.zeros(self.W.shape)
         self.dC_dB = np.zeros(self.b.shape)
         self.count = 0
+
+    def to_bytes(self, byteorder='big'):
+        out = b''
+        out += len(self._name).to_bytes(4, byteorder)
+        out += self._name.encode('utf-8')
+        out += self.input_dim.to_bytes(4, byteorder)
+        out += self.output_dim.to_bytes(4, byteorder)
+        out += len(self.nl.name).to_bytes(4, byteorder)
+        out += self.nl.name.encode('utf-8')
+        return out
 
     ## Forward pass
     # X: ndarray [input_dim, 1] (column vector)

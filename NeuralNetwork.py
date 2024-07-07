@@ -10,6 +10,14 @@ class NeuralNetwork:
         self.input_dim  = layers[0].input_dim
         self.output_dim = layers[-1].output_dim
 
+    def to_bytes(self, byteorder='big') -> bytes:
+        out = b''
+        # Layers
+        out += len(self.layers).to_bytes(4, byteorder)
+        for layer in self.layers:
+            out += layer.to_bytes(byteorder=byteorder)
+        return out
+
     def forward(self, X: np.ndarray) -> np.ndarray:
         for layer in self.layers:
             X = layer.forward(X)
